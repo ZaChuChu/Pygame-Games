@@ -24,17 +24,16 @@ class Maze:
         self.entranceColumn = random.randint(0, self.cols - 1)
         self.exitColumn = random.randint(0, self.cols - 1)
 
+        enterLeftBorder = self.xOffset + self.segmentOffset * self.entranceColumn
+        self.enterBorderVerticals = [Rect(enterLeftBorder, self.height + self.yOffset, self.segmentWidth, self.yOffset), Rect(enterLeftBorder + self.segmentLength - self.segmentWidth, self.height + self.yOffset, self.segmentWidth, self.yOffset)]
+        self.enterBorderHorizontal = Rect(enterLeftBorder, self.height + self.yOffset * 2 - self.segmentWidth, self.segmentLength, self.segmentWidth)
+
         exitLeftBorder = self.xOffset + self.segmentOffset * self.exitColumn
-        self.exitBorderRects = [Rect(exitLeftBorder, 0, self.segmentWidth, self.yOffset), 
-                                Rect(exitLeftBorder + self.segmentLength - self.segmentWidth, 0, self.segmentWidth, self.yOffset), 
-                                Rect(exitLeftBorder, 0, self.segmentLength, self.segmentWidth)]
+        self.exitBorderVerticals = [Rect(exitLeftBorder, 0, self.segmentWidth, self.yOffset), Rect(exitLeftBorder + self.segmentLength - self.segmentWidth, 0, self.segmentWidth, self.yOffset)]
+        self.exitBorderHorizontal = Rect(exitLeftBorder, 0, self.segmentLength, self.segmentWidth)
 
         self.winRect = Rect(exitLeftBorder + self.segmentWidth, self.segmentWidth, self.segmentOffset - self.segmentWidth, self.yOffset - self.segmentWidth)
-
-        enterLeftBorder = self.xOffset + self.segmentOffset * self.entranceColumn
-        self.enterBorderRects = [Rect(enterLeftBorder, self.height + self.yOffset, self.segmentWidth, self.yOffset), 
-                                 Rect(enterLeftBorder + self.segmentLength - self.segmentWidth, self.height + self.yOffset, self.segmentWidth, self.yOffset), 
-                                 Rect(enterLeftBorder, self.height + self.yOffset * 2 - self.segmentWidth, self.segmentLength, self.segmentWidth)]
+        self.startRect = Rect(enterLeftBorder + self.segmentWidth,  self.height + self.yOffset, self.segmentOffset - self.segmentWidth, self.yOffset - self.segmentWidth )
         self.generateWalls()
 
     def generateWalls(self):
@@ -88,11 +87,17 @@ class Maze:
     def getEntrance(self):
         return self.entranceColumn
     
-    def getEntranceBorders(self):
-        return self.enterBorderRects
+    def getEntranceVerticals(self):
+        return self.enterBorderVerticals
     
-    def getExitBorders(self):
-        return self.exitBorderRects
+    def getEntranceHorizontal(self):
+        return self.enterBorderHorizontal
+    
+    def getExitVerticals(self):
+        return self.exitBorderVerticals
+    
+    def getExitHorizontal(self):
+        return self.exitBorderHorizontal
     
     def draw(self, screen):
         draw.rect(screen, "White", self.background)
@@ -107,10 +112,13 @@ class Maze:
                 if wall is not None:
                     draw.rect(screen, "black", wall)
 
-        for wallSet in [self.enterBorderRects, self.exitBorderRects]:
+        for wallSet in [self.enterBorderVerticals, self.exitBorderVerticals]:
             for wall in wallSet:
                 draw.rect(screen, "black", wall)
 
+        draw.rect(screen, "black", self.exitBorderHorizontal)
+        draw.rect(screen, "black", self.enterBorderHorizontal)
+        draw.rect(screen, "white", self.startRect)
         draw.rect(screen, "green", self.winRect)
  
     def getVerticalMovementWalls(self, left, top, right, bottom, direction):

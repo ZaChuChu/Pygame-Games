@@ -72,38 +72,33 @@ def main():
             boxTop = min(max(boxTop, margin), margin + mazeHeight)
             boxRight = min(max(boxRight, margin), margin + mazeWidth)
             boxBottom = min(max(boxBottom, margin), margin + mazeHeight)
-            
-            if boxBottom - boxTop != 0 and boxLeft - boxRight != 0:
+                
+            if posChange[1] != 0:
                 if posChange[1] < 0:
                     verticalBox = [boxLeft, boxTop, boxRight, player.getY() - 1] 
                 else:
                     verticalBox = [boxLeft, player.getY() + playerHeight + 1, boxRight, boxBottom]
+                verticalWalls = maze.getVerticalMovementWalls(*[val - margin for val in verticalBox], posChange[1])
+            else:
+                verticalWalls = []
 
+            if posChange[0] != 0:
                 if posChange[0] < 0:
                     horizontalBox = [boxLeft, boxTop, player.getX() - 1, boxBottom] 
                 else:
                     horizontalBox = [player.getX() + playerWidth + 1, boxTop, boxRight, boxBottom]
-                    
-                if posChange[1] != 0:
-                    verticalWalls = maze.getVerticalMovementWalls(*[val - margin for val in verticalBox], posChange[1])
-                else:
-                    verticalWalls = []
-
-                if posChange[0] != 0:
-                    horizontalWalls = maze.getHorizontalMovementWalls(*[val - margin for val in horizontalBox], posChange[0])
-                else:
-                    horizontalWalls = []
-
+                horizontalWalls = maze.getHorizontalMovementWalls(*[val - margin for val in horizontalBox], posChange[0])
             else:
-                verticalWalls = []
                 horizontalWalls = []
 
             if player.getY() >= margin + mazeHeight - playerSpeed:
-                for rect in maze.getEntranceBorders():
+                for rect in maze.getEntranceVerticals():
                     horizontalWalls.append(rect)
+                verticalWalls.append(maze.getEntranceHorizontal())
             elif player.getY() <= margin + playerSpeed:
-                for rect in maze.getExitBorders():
+                for rect in maze.getExitVerticals():
                     horizontalWalls.append(rect)
+                verticalWalls.append(maze.getExitHorizontal())
 
             player.movePlayer(posChange, [horizontalWalls, verticalWalls])
             
