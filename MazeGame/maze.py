@@ -1,8 +1,5 @@
-from node import Node
-from edge import Edge, mstSort
-from functools import cmp_to_key
-import math
 from pygame import Rect, draw
+from mazeGraph import MazeGraph
 import random
 
 class Maze:
@@ -13,52 +10,38 @@ class Maze:
         self.segmentLength = segmentLength
         self.segmentWidth = segmentWidth
         self.segmentOffset = segmentLength - segmentWidth
+        self.xOffset = xOffset
+        self.yOffset = yOffset
         self.width = segmentWidth + self.segmentOffset * cols
         self.height = segmentWidth + self.segmentOffset * rows
         self.background = Rect(xOffset, yOffset, self.width, self.height)
 
         # Generate Graph
-        nodes = [[Node(row, col) for col in range(cols)] for row in range(rows)]
-        self.entranceColumn = random.randint(0, cols-1)
-        self.exitColumn = random.randint(0, cols-1)
+        self.graph = MazeGraph(rows, cols)
+        self.generateMaze()
+    
+    def generateMaze(self):
+        self.entranceColumn = random.randint(0, self.cols - 1)
+        self.exitColumn = random.randint(0, self.cols - 1)
 
+        exitLeftBorder = self.xOffset + self.segmentOffset * self.exitColumn
+        self.exitBorderRects = [Rect(exitLeftBorder, 0, self.segmentWidth, self.yOffset), 
+                                Rect(exitLeftBorder + self.segmentLength - self.segmentWidth, 0, self.segmentWidth, self.yOffset), 
+                                Rect(exitLeftBorder, 0, self.segmentLength, self.segmentWidth)]
 
-        exitLeftBorder = xOffset + self.segmentOffset * self.exitColumn
-        self.exitBorderRects = [Rect(exitLeftBorder, 0, self.segmentWidth, yOffset), Rect(exitLeftBorder + self.segmentLength - self.segmentWidth, 0, self.segmentWidth, yOffset), Rect(exitLeftBorder, 0, self.segmentLength, self.segmentWidth)]
+        self.winRect = Rect(exitLeftBorder + self.segmentWidth, self.segmentWidth, self.segmentOffset - self.segmentWidth, self.yOffset - self.segmentWidth)
 
-        self.winRect = Rect(exitLeftBorder + self.segmentWidth, self.segmentWidth, self.segmentOffset - self.segmentWidth, yOffset - self.segmentWidth)
+        enterLeftBorder = self.xOffset + self.segmentOffset * self.entranceColumn
+        self.enterBorderRects = [Rect(enterLeftBorder, self.height + self.yOffset, self.segmentWidth, self.yOffset), 
+                                 Rect(enterLeftBorder + self.segmentLength - self.segmentWidth, self.height + self.yOffset, self.segmentWidth, self.yOffset), 
+                                 Rect(enterLeftBorder, self.height + self.yOffset * 2 - self.segmentWidth, self.segmentLength, self.segmentWidth)]
+        self.generateWalls()
 
-        enterLeftBorder = xOffset + self.segmentOffset * self.entranceColumn
-        self.enterBorderRects = [Rect(enterLeftBorder, self.height + yOffset, self.segmentWidth, yOffset), Rect(enterLeftBorder + self.segmentLength - self.segmentWidth, self.height + yOffset, self.segmentWidth, yOffset), Rect(enterLeftBorder, self.height + yOffset * 2 - self.segmentWidth, self.segmentLength, self.segmentWidth)]
+    def generateWalls(self):
+        mst = self.graph.getMST()
 
-        edges = []
-        edgeCount = ((rows - 1) * cols + (cols - 1 ) * rows) * 2
-        for row in range(rows):
-            for col in range(cols - 1):
-                edges.append(Edge([row, col], [row, col + 1], random.randint(1, edgeCount * 3)))
-        for col in range(cols):
-            for row in range(rows - 1):
-                edges.append(Edge([row, col], [row + 1, col], random.randint(1, edgeCount * 3)))
-
-        edges.sort()
-
-        # Generate MST
-        mst = []
-        i = 0
-        counted = 0
-
-        while len(nodes[0][0].parent.set) < (rows * cols):
-            edge = edges[i]
-            y1, x1 = edge.node1
-            y2, x2 = edge.node2
-            if nodes[y1][x1].union(nodes[y2][x2]):
-                mst.append(edge)
-            i += 1
-
-        mst.sort(key=cmp_to_key(mstSort))
-
-        horizontalAdjacencies = [[] for i in range(cols-1)]
-        verticalAdjacencies = [[] for i in range(rows-1)]
+        horizontalAdjacencies = [[] for i in range(self.cols - 1)]
+        verticalAdjacencies = [[] for i in range(self.rows - 1)]
         for edge in mst:
             if edge.node1[0] == edge.node2[0]:
                 horizontalAdjacencies[edge.node1[1]].append(edge)
@@ -66,11 +49,11 @@ class Maze:
                 verticalAdjacencies[edge.node1[0]].append(edge)
 
         # Make list of horizontal walls by row
-        self.horizontalWalls = [[None for j in range(cols)] for i in range(rows + 1)]
+        self.horizontalWalls = [[None for j in range(self.cols)] for i in range(self.rows + 1)]
         
-        for row, col in [[0, self.exitColumn], [rows, self.entranceColumn]]:
-            for i in range(0, cols):
-                self.horizontalWalls[row][i] = Rect(i * self.segmentOffset + xOffset, row * self.segmentOffset + yOffset, segmentLength, segmentWidth)
+        for row, col in [[0, self.exitColumn], [self.rows, self.entranceColumn]]:
+            for i in range(0, self.cols):
+                self.horizontalWalls[row][i] = Rect(i * self.segmentOffset + self.xOffset, row * self.segmentOffset + self.yOffset, self.segmentLength, self.segmentWidth)
             self.horizontalWalls[row][col] = None
 
         for (i, row) in enumerate(verticalAdjacencies):
@@ -79,17 +62,17 @@ class Maze:
             for edge in row:
                 edgeX = edge.node1[1]
                 for wallX in range(x, edgeX):
-                    self.horizontalWalls[i][wallX] = Rect(wallX * self.segmentOffset + xOffset, i * self.segmentOffset + yOffset, segmentLength, segmentWidth)
+                    self.horizontalWalls[i][wallX] = Rect(wallX * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentLength, self.segmentWidth)
                 x = edgeX + 1
-            for wallX in range(x, cols):
-                    self.horizontalWalls[i][wallX] = Rect(wallX * self.segmentOffset + xOffset, i * self.segmentOffset + yOffset, segmentLength, segmentWidth)
+            for wallX in range(x, self.cols):
+                    self.horizontalWalls[i][wallX] = Rect(wallX * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentLength, self.segmentWidth)
                 
         # Make list of vertical walls by column
-        self.verticalWalls = [[None for j in range(rows)] for i in range(cols + 1)]
+        self.verticalWalls = [[None for j in range(self.rows)] for i in range(self.cols + 1)]
 
-        for index in [0, cols]:
-            for i in range(rows):
-                self.verticalWalls[index][i] = Rect(index * self.segmentOffset + xOffset, i * self.segmentOffset + yOffset, segmentWidth, segmentLength)
+        for index in [0, self.cols]:
+            for i in range(self.rows):
+                self.verticalWalls[index][i] = Rect(index * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
 
         for (i, row) in enumerate(horizontalAdjacencies):
             i += 1
@@ -97,11 +80,11 @@ class Maze:
             for edge in row:
                 edgeY = edge.node1[0]
                 for wallY in range(y, edgeY):
-                    self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + xOffset, wallY * self.segmentOffset + yOffset, segmentWidth, segmentLength)
+                    self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + self.xOffset, wallY * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
                 y = edgeY + 1
-            for wallY in range(y, rows):
-                    self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + xOffset, wallY * self.segmentOffset + yOffset, segmentWidth, segmentLength)
-    
+            for wallY in range(y, self.rows):
+                    self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + self.xOffset, wallY * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
+
     def getEntrance(self):
         return self.entranceColumn
     

@@ -98,10 +98,10 @@ def main():
                 verticalWalls = []
                 horizontalWalls = []
 
-            if player.getY() > margin + mazeHeight:
+            if player.getY() >= margin + mazeHeight - playerSpeed:
                 for rect in maze.getEntranceBorders():
                     horizontalWalls.append(rect)
-            elif player.getY() < margin:
+            elif player.getY() <= margin + playerSpeed:
                 for rect in maze.getExitBorders():
                     horizontalWalls.append(rect)
 
