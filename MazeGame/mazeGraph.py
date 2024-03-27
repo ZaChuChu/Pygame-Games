@@ -8,34 +8,59 @@ class MazeGraph:
         self.rows = rows
         self.cols = cols
         self.nodes = [[Node(row, col) for col in range(self.cols)] for row in range(self.rows)]
-        self.generateEdges()
+        self.edgeCount = ((self.rows - 1) * self.cols + (self.cols - 1 ) * self.rows)
+        self.maxWeight = self.edgeCount * 4
 
-    def generateEdges(self):
+    def startGraph(self):
+        for row in self.nodes:
+            for node in row:
+                node.parent = node
+                node.set = [node]
+
         self.edges = []
-        edgeCount = ((self.rows - 1) * self.cols + (self.cols - 1 ) * self.rows) * 2
 
         for row in range(self.rows):
             for col in range(self.cols - 1):
-                self.edges.append(Edge([row, col], [row, col + 1], random.randint(1, edgeCount * 3)))
+                self.edges.append(Edge([row, col], [row, col + 1], random.randint(1, self.maxWeight)))
 
         for col in range(self.cols):
             for row in range(self.rows - 1):
-                self.edges.append(Edge([row, col], [row + 1, col], random.randint(1, edgeCount * 3)))
+                self.edges.append(Edge([row, col], [row + 1, col], random.randint(1, self.maxWeight)))
                 
         self.edges.sort()
 
-    def getMST(self):
-        mst = []
-        i = 0
-        counted = 0
+        self.generateMST()
 
+    def generateMST(self):
+        self.mst = []
+        i = 0
         while len(self.nodes[0][0].parent.set) < (self.rows * self.cols):
             edge = self.edges[i]
             y1, x1 = edge.node1
             y2, x2 = edge.node2
             if self.nodes[y1][x1].union(self.nodes[y2][x2]):
-                mst.append(edge)
+                self.mst.append(edge)
             i += 1
 
-        mst.sort(key=cmp_to_key(mstSort))
-        return mst
+        self.mst.sort(key=cmp_to_key(mstSort))
+    
+    def getMST(self):
+        return self.mst
+
+    def randomizeGraph(self):
+        for row in self.nodes:
+            for node in row:
+                node.parent = node
+                node.set = [node]
+        
+        random.shuffle(self.mst)
+
+        lowerPercent = .05
+        upperPercent = .08
+
+        for edge in self.mst[:random.randint(int(self.edgeCount * lowerPercent), int(self.edgeCount * upperPercent))]:
+            edge.weight = random.randint(1, self.maxWeight)
+
+        self.edges.sort()
+
+        self.generateMST()

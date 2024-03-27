@@ -7,14 +7,14 @@ def main():
 
     wallLength = 50
     wallWidth = int(wallLength * .1)
-    rows = 25
+    rows = 20
     cols = rows
     margin = wallLength
     wallOffset = wallLength - wallWidth
     mazeHeight = wallOffset * rows + wallWidth
     mazeWidth = wallOffset * cols + wallWidth
-    if mazeHeight + 2 * margin > 1080:
-        wallLength = 1080 // (rows + 2)
+    if mazeHeight + 2 * margin > 1000:
+        wallLength = 1000 // (rows + 2)
         wallOffset = wallLength - wallWidth
         margin = wallOffset
         mazeHeight = wallOffset * rows + wallWidth
@@ -26,13 +26,14 @@ def main():
     screenHeight = mazeHeight  + 2 * margin
 
     pygame.init()
+    pygame.display.set_caption("One who enjoys moving quickly in mazes")
     screen = pygame.display.set_mode((screenWidth, screenHeight))
     clock = pygame.time.Clock()
 
     playerHeight = int((wallOffset - wallWidth) * .65)
     playerWidth = playerHeight
     playerColor = "dark grey"
-    playerSpeed = int(wallOffset * .1)
+    playerSpeed = int(wallOffset * .05)
     playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
     playerStartY = margin + mazeHeight + (margin - playerHeight) // 2
 
@@ -60,6 +61,7 @@ def main():
             elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 boxLeft -= playerSpeed
                 posChange[0] = -1
+
             if (keys[pygame.K_w] or keys[pygame.K_UP]):
                 if not keys[pygame.K_s] or keys[pygame.K_DOWN]:
                     boxTop -= playerSpeed
@@ -100,7 +102,11 @@ def main():
                     horizontalWalls.append(rect)
                 verticalWalls.append(maze.getExitHorizontal())
 
+
             player.movePlayer(posChange, [horizontalWalls, verticalWalls])
+
+            if any([val != 0 for val in posChange]):
+                maze.randomize(player.rect)
             
             if maze.winRect.contains(player.rect):
                 gameOver = True

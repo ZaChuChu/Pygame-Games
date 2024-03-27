@@ -15,12 +15,13 @@ class Maze:
         self.width = segmentWidth + self.segmentOffset * cols
         self.height = segmentWidth + self.segmentOffset * rows
         self.background = Rect(xOffset, yOffset, self.width, self.height)
+        self.graph = MazeGraph(self.rows, self.cols)
+        self.startMaze()
 
-        # Generate Graph
-        self.graph = MazeGraph(rows, cols)
-        self.generateMaze()
-    
-    def generateMaze(self):
+    def startMaze(self):
+        self.graph.startGraph()
+        self.lastPlayerRow = -1
+        self.lastPlayerCol = -1
         self.entranceColumn = random.randint(0, self.cols - 1)
         self.exitColumn = random.randint(0, self.cols - 1)
 
@@ -34,11 +35,11 @@ class Maze:
 
         self.winRect = Rect(exitLeftBorder + self.segmentWidth, self.segmentWidth, self.segmentOffset - self.segmentWidth, self.yOffset - self.segmentWidth)
         self.startRect = Rect(enterLeftBorder + self.segmentWidth,  self.height + self.yOffset, self.segmentOffset - self.segmentWidth, self.yOffset - self.segmentWidth )
+
         self.generateWalls()
 
     def generateWalls(self):
         mst = self.graph.getMST()
-
         horizontalAdjacencies = [[] for i in range(self.cols - 1)]
         verticalAdjacencies = [[] for i in range(self.rows - 1)]
         for edge in mst:
@@ -83,6 +84,19 @@ class Maze:
                 y = edgeY + 1
             for wallY in range(y, self.rows):
                     self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + self.xOffset, wallY * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
+    
+    def randomize(self, playerRect):
+        x = (playerRect.x - self.xOffset) % self.segmentOffset
+        y = (playerRect.y - self.yOffset) % self.segmentOffset
+        if x >= self.segmentWidth and x + playerRect.width <= self.segmentOffset:
+            if y >= self.segmentWidth and y + playerRect.height <= self.segmentOffset:
+                row = (playerRect.y - self.yOffset) // self.segmentOffset
+                col = (playerRect.x - self.xOffset) // self.segmentOffset
+                if row != self.lastPlayerRow or col != self.lastPlayerCol:
+                    self.lastPlayerRow = row
+                    self.lastPlayerCol = col
+                    self.graph.randomizeGraph()
+                    self.generateWalls()
 
     def getEntrance(self):
         return self.entranceColumn
@@ -130,6 +144,9 @@ class Maze:
             verticalColStart = top // self.segmentOffset
         verticalColEnd = bottom // self.segmentOffset
 
+        verticalColStart = max(verticalColStart, 0)
+        verticalColEnd = min(verticalColEnd, self.rows - 1)
+
         verticalRowStart = max(left // self.segmentOffset, 0)
         verticalRowEnd = min(right // self.segmentOffset, self.cols)
 
@@ -139,20 +156,17 @@ class Maze:
             horizontalColStart = left // self.segmentOffset
         horizontalColEnd = right // self.segmentOffset
 
+        horizontalColStart = max(horizontalColStart, 0)
+        horizontalColEnd = min(horizontalColEnd, self.cols - 1)
+
         horizontalRowStart = max(top // self.segmentOffset, 0)
         horizontalRowEnd = min(bottom // self.segmentOffset, self.rows)
-
-        verticalColStart = max(verticalColStart, 0)
-        verticalColEnd = min(verticalColEnd, self.rows - 1)
 
         for row in range(verticalRowStart, verticalRowEnd + 1):
             for col in range(verticalColStart, verticalColEnd + 1):
                 wall = self.verticalWalls[row][col]
                 if wall is not None:
                     walls.append(wall)
-
-        horizontalColStart = max(horizontalColStart, 0)
-        horizontalColEnd = min(horizontalColEnd, self.cols - 1)
 
         for row in range(horizontalRowStart, horizontalRowEnd + 1):
             for col in range(horizontalColStart, horizontalColEnd + 1):
@@ -171,6 +185,9 @@ class Maze:
             horizontalColStart = left // self.segmentOffset
         horizontalColEnd = right // self.segmentOffset
 
+        horizontalColStart = max(horizontalColStart, 0)
+        horizontalColEnd = min(horizontalColEnd, self.cols - 1)
+
         horizontalRowStart = max(top // self.segmentOffset, 0)
         horizontalRowEnd = min(bottom // self.segmentOffset, self.rows)
 
@@ -180,13 +197,11 @@ class Maze:
             verticalColStart = top // self.segmentOffset
         verticalColEnd = bottom // self.segmentOffset
 
-        verticalRowStart = max(left // self.segmentOffset, 0)
-        verticalRowEnd = min(right // self.segmentOffset, self.cols)
-
-        horizontalColStart = max(horizontalColStart, 0)
-        horizontalColEnd = min(horizontalColEnd, self.cols - 1)
         verticalColStart = max(verticalColStart, 0)
         verticalColEnd = min(verticalColEnd, self.rows - 1)
+
+        verticalRowStart = max(left // self.segmentOffset, 0)
+        verticalRowEnd = min(right // self.segmentOffset, self.cols)
 
         for row in range(horizontalRowStart, horizontalRowEnd + 1):
             for col in range(horizontalColStart, horizontalColEnd + 1):
