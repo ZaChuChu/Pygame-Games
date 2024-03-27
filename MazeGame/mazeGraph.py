@@ -31,6 +31,12 @@ class MazeGraph:
 
         self.generateMST()
 
+    def clearNodes(self):
+        for row in self.nodes:
+            for node in row:
+                node.parent = node
+                node.set = [node]
+
     def generateMST(self):
         self.mst = []
         i = 0
@@ -48,17 +54,17 @@ class MazeGraph:
         return self.mst
 
     def randomizeGraph(self):
-        for row in self.nodes:
-            for node in row:
-                node.parent = node
-                node.set = [node]
+        self.clearNodes()
         
         random.shuffle(self.mst)
 
         lowerPercent = .01
-        upperPercent = .07
+        upperPercent = .03
 
         for edge in self.mst[:random.randint(int(self.edgeCount * lowerPercent), int(self.edgeCount * upperPercent))]:
+            edge.weight = random.randint(1, self.maxWeight)
+        
+        for edge in self.edges[self.edgeCount - (max(self.rows, self.cols) // 4):]:
             edge.weight = random.randint(1, self.maxWeight)
 
         self.edges.sort()
