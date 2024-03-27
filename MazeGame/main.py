@@ -1,13 +1,14 @@
 from maze import Maze
 from player import Player
 import pygame
+from time import time
 from pygame import Rect, draw
 
 def main():
 
     wallLength = 50
     wallWidth = int(wallLength * .1)
-    rows = 20
+    rows = 10
     cols = rows
     margin = wallLength
     wallOffset = wallLength - wallWidth
@@ -26,28 +27,30 @@ def main():
     screenHeight = mazeHeight  + 2 * margin
 
     pygame.init()
-    pygame.display.set_caption("One who enjoys moving quickly in mazes")
+    pygame.display.set_caption("One Who Enjoys Moving Quickly in Mazes")
     screen = pygame.display.set_mode((screenWidth, screenHeight))
     clock = pygame.time.Clock()
 
     playerHeight = int((wallOffset - wallWidth) * .65)
     playerWidth = playerHeight
     playerColor = "dark grey"
-    playerSpeed = int(wallOffset * .05)
+    playerSpeed = max(int(wallOffset * .05), 1)
     playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
-    playerStartY = margin + mazeHeight + (margin - playerHeight) // 2
+    playerStartY = margin + mazeHeight + (margin - playerHeight) // 2 - wallWidth
 
     player = Player(playerStartX, playerStartY, playerWidth, playerHeight, playerColor, playerSpeed, screenWidth, screenHeight)
 
     running = True
     gameOver = False
+    startTime = time()
 
     while running:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+        keys = pygame.key.get_pressed()
         if not gameOver:
-            keys = pygame.key.get_pressed()
             posChange = [0, 0]
             boxLeft = player.getX()
             boxTop = player.getY()
@@ -102,13 +105,13 @@ def main():
                     horizontalWalls.append(rect)
                 verticalWalls.append(maze.getExitHorizontal())
 
-
             player.movePlayer(posChange, [horizontalWalls, verticalWalls])
 
             if any([val != 0 for val in posChange]):
                 maze.randomize(player.rect)
             
             if maze.winRect.contains(player.rect):
+                endTime = time()
                 gameOver = True
 
             screen.fill("orange")
@@ -116,5 +119,15 @@ def main():
             player.draw(screen)
             pygame.display.flip()
             clock.tick(60)
+        
+        else:
+
+            if keys[pygame.K_SPACE]:
+                startTime = time()
+                gameOver = False
+                maze.startMaze()
+                playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
+                player.moveTo(playerStartX, playerStartY)
+
 
 if __name__ == "__main__": main()

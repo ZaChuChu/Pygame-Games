@@ -29,6 +29,9 @@ class Player:
         elif self.rect.top < 0:
             self.rect.top = 0
                 
+    def moveTo(self, newX, newY):
+        self.rect.x = newX
+        self.rect.y = newY
 
     def getX(self):
         return self.rect.x
