@@ -15,7 +15,8 @@ def main():
     mazeHeight = wallOffset * rows + wallWidth
     mazeWidth = wallOffset * cols + wallWidth
     if mazeHeight + 2 * margin > 1000:
-        wallLength = 1000 // (rows + 2)
+        wallLength = max(1000 // (rows + 2), 1)
+        wallWidth = max(int(wallLength / 8), 1)
         wallOffset = wallLength - wallWidth
         margin = wallOffset
         mazeHeight = wallOffset * rows + wallWidth
@@ -33,7 +34,7 @@ def main():
 
     playerHeight = int((wallOffset - wallWidth) * .65)
     playerWidth = playerHeight
-    playerColor = "dark grey"
+    playerColor = "blue"
     playerSpeed = max(int(wallOffset * .05), 1)
     playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
     playerStartY = margin + mazeHeight + (margin - playerHeight) // 2 - wallWidth
