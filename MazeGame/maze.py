@@ -17,6 +17,8 @@ class Maze:
         self.background = Rect(xOffset, yOffset, self.width, self.height)
         self.graph = MazeGraph(self.rows, self.cols)
         self.startMaze()
+        self.randomizeStart = 500
+        self.randomizedCount = self.randomizeStart
 
     def startMaze(self):
         self.graph.startGraph()
@@ -95,7 +97,12 @@ class Maze:
                 if row != self.lastPlayerRow or col != self.lastPlayerCol:
                     self.lastPlayerRow = row
                     self.lastPlayerCol = col
-                    self.graph.randomizeGraph()
+                    if random.randint(1, self.randomizedCount) == 1:
+                        self.graph.startGraph()
+                        self.randomizedCount = self.randomizeStart
+                    else:
+                        self.graph.randomizeGraph()
+                        self.randomizedCount -= 1
                     self.generateWalls()
 
     def getEntrance(self):

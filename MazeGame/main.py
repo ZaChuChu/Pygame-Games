@@ -8,7 +8,7 @@ def main():
 
     wallLength = 50
     wallWidth = int(wallLength * .1)
-    rows = 10
+    rows = 25
     cols = rows
     margin = wallLength
     wallOffset = wallLength - wallWidth
@@ -27,7 +27,7 @@ def main():
     screenHeight = mazeHeight  + 2 * margin
 
     pygame.init()
-    pygame.display.set_caption("One Who Enjoys Moving Quickly in Mazes")
+    pygame.display.set_caption("One Who Runs Through Mazes")
     screen = pygame.display.set_mode((screenWidth, screenHeight))
     clock = pygame.time.Clock()
 
