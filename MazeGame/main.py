@@ -33,7 +33,7 @@ def main():
     playerHeight = int((wallOffset - wallWidth) * .65)
     playerWidth = playerHeight
     playerColor = "blue"
-    playerSpeed = max(int(wallOffset * .05), 1)
+    playerSpeed = max(int(wallOffset * .065), 1)
     playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
     playerStartY = margin + mazeHeight + (margin - playerHeight) // 2 - wallWidth
 
@@ -122,10 +122,7 @@ def main():
         else:
             winText = pygame.font.Font(size = 80).render("You Solved The Maze!", True, "Green")
             totalTime = endTime - startTime
-            if totalTime >= 60:
-                timeText = pygame.font.Font(size = 60).render(f"Time: {round(totalTime // 60)}:{int(totalTime % 60)}", True, "Green")
-            else:
-                timeText = pygame.font.Font(size = 60).render(f"Time: {round(totalTime, 1)} seconds", True, "Green")
+            timeText = pygame.font.Font(size = 60).render(f"Time: {round(totalTime // 60)}:"+f"{int(totalTime % 60)}".zfill(2), True, "Green")
             playText = pygame.font.Font(size = 40).render("(Press Space to play again)", True, "Green")
             winX = (screenWidth - winText.get_width()) // 2
             timeX = (screenWidth - timeText.get_width()) // 2
