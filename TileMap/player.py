@@ -55,7 +55,7 @@ class Player:
         else:
             self.rect.x = self.centerScreenX
             self.screenLeft = self.relativeX - self.centerScreenX + self.xOffset
-            self.screenRight = self.screenLeft + self.screenWidth + self.xOffset
+            self.screenRight = self.screenLeft + self.screenWidth
         
 
 
@@ -73,7 +73,7 @@ class Player:
         else:
             self.rect.y = self.centerScreenY            
             self.screenTop = self.relativeY - self.centerScreenY + self.yOffset
-            self.screenBottom = self.screenTop + self.screenHeight + self.yOffset
+            self.screenBottom = self.screenTop + self.screenHeight
     
     def absoluteScreenEdges(self):
         return [self.screenLeft, self.screenTop, self.screenRight, self.screenBottom]

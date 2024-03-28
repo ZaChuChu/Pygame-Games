@@ -21,8 +21,13 @@ class Tiles:
         self.prevRowEnd = 0
         self.prevColStart = 0 
         self.prevColEnd = 0
+        self.outLine = Rect(0,0,0,0)
 
     def setTiles(self, screenLeft, screenTop, screenRight, screenBottom):
+        self.outLine.x = screenLeft
+        self.outLine.y = screenTop
+        self.outLine.width = screenRight - screenLeft
+        self.outLine.height = screenBottom - screenTop
         tilesColStart = max((screenLeft - self.xOffset) // self.cellWidth, 0)
         tilesColEnd = min((screenRight - self.xOffset) // self.cellWidth, self.cols - 1)
 
@@ -50,4 +55,5 @@ class Tiles:
             for tileObj in row:
                 if tileObj.display:
                     draw.rect(screen, tileObj.color, tileObj.rect)
+        draw.rect(screen, "red", self.outLine, 5)
     

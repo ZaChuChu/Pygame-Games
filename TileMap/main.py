@@ -7,14 +7,14 @@ from pygame import Rect, draw
 
 def main():
 
-    cellWidth = 50
+    cellWidth = 100
     cellHeight = cellWidth
-    rows = 25
-    cols = 25
+    rows = 10
+    cols = 10
     xMargin = cellWidth
     yMargin = cellHeight
 
-    screenWidth = 750
+    screenWidth = 500
     screenHeight = screenWidth
     tilesObj = Tiles(rows, cols, cellWidth, cellHeight, xMargin, yMargin, screenWidth, screenHeight)
 
@@ -26,14 +26,11 @@ def main():
     playerHeight = 50
     playerWidth = playerHeight
     playerColor = "White"
-    playerSpeed = 5
+    playerSpeed = cellHeight // 3
     playerMaxX = cols * cellWidth
     playerMaxY = rows * cellHeight
     playerStartX = (playerMaxX - playerWidth) // 2
     playerStartY = (playerMaxY - playerHeight) // 2
-    playerStartX = 0
-    playerStartY = 0
-
 
     player = Player(playerStartX, playerStartY, playerWidth, playerHeight, screenWidth, xMargin, playerMaxX, screenHeight, yMargin, playerMaxY, playerColor)
                 
@@ -68,11 +65,11 @@ def main():
                 tilesObj.setTiles(*player.absoluteScreenEdges())
 
             screen.fill("orange")
-            # draw.rect(screen, "Black", Rect(0, 0, screenWidth, screenHeight), 50)
+            draw.rect(screen, "Black", Rect(0, 0, screenWidth, screenHeight), xMargin)
             tilesObj.draw(screen)
             player.draw(screen)
             pygame.display.flip()
-            clock.tick(100)
+            clock.tick(60)
         
         else:
             textSurface = pygame.font.Font(size = 80).render("Game Over", True, "Dark Red")
