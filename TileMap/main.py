@@ -1,6 +1,8 @@
 import random
 import pygame
 from time import time
+from tiles import Tiles
+from player import Player
 from pygame import Rect, draw
 
 def main():
@@ -8,27 +10,34 @@ def main():
     cellWidth = 50
     cellHeight = cellWidth
     rows = 25
-    cols = rows
+    cols = 25
     xMargin = cellWidth
     yMargin = cellHeight
 
-
-    screenWidth = cellWidth * cols + 2 * xMargin
-    screenHeight = cellHeight * rows + 2 * yMargin
+    screenWidth = 750
+    screenHeight = screenWidth
+    tilesObj = Tiles(rows, cols, cellWidth, cellHeight, xMargin, yMargin, screenWidth, screenHeight)
 
     pygame.init()
     pygame.display.set_caption("One Who Runs Through Mazes")
     screen = pygame.display.set_mode((screenWidth, screenHeight))
     clock = pygame.time.Clock()
 
-    playerHeight = 40
+    playerHeight = 50
     playerWidth = playerHeight
-    playerColor = "blue"
-    playerSpeed = max(int(cellHeight * .05), 1)
+    playerColor = "White"
+    playerSpeed = 5
+    playerMaxX = cols * cellWidth
+    playerMaxY = rows * cellHeight
+    playerStartX = (playerMaxX - playerWidth) // 2
+    playerStartY = (playerMaxY - playerHeight) // 2
     playerStartX = 0
     playerStartY = 0
 
-    player = Player(playerStartX, playerStartY, playerWidth, playerHeight, playerColor, playerSpeed, screenWidth, screenHeight)
+
+    player = Player(playerStartX, playerStartY, playerWidth, playerHeight, screenWidth, xMargin, playerMaxX, screenHeight, yMargin, playerMaxY, playerColor)
+                
+    tilesObj.setTiles(*player.absoluteScreenEdges())
 
     running = True
     gameOver = False
@@ -42,23 +51,28 @@ def main():
         keys = pygame.key.get_pressed()
         if not gameOver:
             
-            if (keys[pygame.K_d] or keys[pygame.K_RIGHT]):
-                pass
-            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                pass
-            if (keys[pygame.K_w] or keys[pygame.K_UP]):
-                pass
-            if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-                pass
+            xChange = 0
+            yChange = 0
 
-            if winCondition:
-                endTime = time()
-                gameOver = True
+            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                xChange -= playerSpeed
+            if (keys[pygame.K_d] or keys[pygame.K_RIGHT]):
+                xChange += playerSpeed
+            if (keys[pygame.K_w] or keys[pygame.K_UP]):
+                yChange -= playerSpeed
+            if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                yChange += playerSpeed
+
+            if xChange or yChange:
+                player.movePlayer(xChange, yChange)
+                tilesObj.setTiles(*player.absoluteScreenEdges())
 
             screen.fill("orange")
+            # draw.rect(screen, "Black", Rect(0, 0, screenWidth, screenHeight), 50)
+            tilesObj.draw(screen)
             player.draw(screen)
             pygame.display.flip()
-            clock.tick(60)
+            clock.tick(100)
         
         else:
             textSurface = pygame.font.Font(size = 80).render("Game Over", True, "Dark Red")
@@ -76,7 +90,4 @@ def main():
                 player.moveTo(playerStartX, playerStartY)
 
 
-if __name__ == "__main__": main()
-
-        
 if __name__ == "__main__": main()
