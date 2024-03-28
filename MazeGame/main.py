@@ -6,22 +6,20 @@ from pygame import Rect, draw
 
 def main():
 
+    screenHeight = 1000
+
     wallLength = 50
     wallWidth = int(wallLength * .1)
-    rows = 25
+    rows = 30
     cols = rows
-    margin = wallLength
+    
+    wallLength = max(screenHeight // (rows + 2), 1)
+    wallWidth = max(int(wallLength / 8), 1)
     wallOffset = wallLength - wallWidth
+    margin = wallOffset
     mazeHeight = wallOffset * rows + wallWidth
     mazeWidth = wallOffset * cols + wallWidth
-    if mazeHeight + 2 * margin > 1000:
-        wallLength = max(1000 // (rows + 2), 1)
-        wallWidth = max(int(wallLength / 8), 1)
-        wallOffset = wallLength - wallWidth
-        margin = wallOffset
-        mazeHeight = wallOffset * rows + wallWidth
-        mazeWidth = wallOffset * cols + wallWidth
-    
+  
     maze = Maze(rows, cols, wallLength, wallWidth, margin, margin)
 
     screenWidth = mazeWidth + 2 * margin
@@ -122,7 +120,26 @@ def main():
             clock.tick(60)
         
         else:
-
+            winText = pygame.font.Font(size = 80).render("You Solved The Maze!", True, "Green")
+            totalTime = endTime - startTime
+            if totalTime >= 60:
+                timeText = pygame.font.Font(size = 60).render(f"Time: {round(totalTime // 60)}:{int(totalTime % 60)}", True, "Green")
+            else:
+                timeText = pygame.font.Font(size = 60).render(f"Time: {round(totalTime, 1)} seconds", True, "Green")
+            playText = pygame.font.Font(size = 40).render("(Press Space to play again)", True, "Green")
+            winX = (screenWidth - winText.get_width()) // 2
+            timeX = (screenWidth - timeText.get_width()) // 2
+            playX = (screenWidth - playText.get_width()) // 2
+            winY = (screenHeight - winText.get_height()) // 2
+            timeY = winY + winText.get_height() + 5
+            playY = timeY + timeText.get_height() + 5
+            textBackground = pygame.Rect(winX - 15, winY - 15, winText.get_width() + 30, winText.get_height() + playText.get_height() + timeText.get_height() + 40)
+            pygame.draw.rect(screen, "dark gray" , textBackground)
+            pygame.draw.rect(screen, "black" , textBackground, 5)
+            screen.blit(winText, (winX, winY))
+            screen.blit(timeText, (timeX, timeY))
+            screen.blit(playText, (playX, playY))
+            pygame.display.flip()
             if keys[pygame.K_SPACE]:
                 startTime = time()
                 gameOver = False

@@ -39,17 +39,5 @@ class Player:
     def getY(self):
         return self.rect.y
 
-    def checkTop(self, wall):
-        self.rect.top = max(self.rect.top, wall.bottom + 1)
-
-    def checkLeft(self, wall):
-        self.rect.left = max(self.rect.left, wall.right + 1)
-
-    def checkBottom(self, wall):
-        self.rect.bottom = min(self.rect.bottom, wall.top - 1)
-
-    def checkRight(self, wall):
-        self.rect.right = min(self.rect.right, wall.left - 1)
-
     def draw(self, screen):
          draw.rect(screen, self.color , self.rect)
