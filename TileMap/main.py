@@ -9,13 +9,13 @@ def main():
 
     cellWidth = 100
     cellHeight = cellWidth
-    cols = 50
-    rows = 25
+    cols = 10
+    rows = 10
     xMargin = cellWidth
     yMargin = cellHeight
 
-    screenWidth = 1400
-    screenHeight = 700
+    screenWidth = 500
+    screenHeight = 500
     tilesObj = Tiles(rows, cols, cellWidth, cellHeight, xMargin, yMargin, screenWidth, screenHeight)
 
     pygame.init()
@@ -26,11 +26,13 @@ def main():
     playerHeight = 50
     playerWidth = playerHeight
     playerColor = "White"
-    playerSpeed = cellHeight // 10
+    playerSpeed = 5
     playerMaxX = cols * cellWidth
     playerMaxY = rows * cellHeight
     playerStartX = (playerMaxX - playerWidth) // 2
     playerStartY = (playerMaxY - playerHeight) // 2
+    # playerStartX = 0
+    # playerStartY = 0
 
     player = Player(playerStartX, playerStartY, playerWidth, playerHeight, screenWidth, xMargin, playerMaxX, screenHeight, yMargin, playerMaxY, playerColor)
                 
