@@ -9,13 +9,13 @@ def main():
 
     cellWidth = 100
     cellHeight = cellWidth
+    cols = 50
     rows = 25
-    cols = 25
     xMargin = cellWidth
     yMargin = cellHeight
 
-    screenWidth = 700
-    screenHeight = screenWidth
+    screenWidth = 1400
+    screenHeight = 700
     tilesObj = Tiles(rows, cols, cellWidth, cellHeight, xMargin, yMargin, screenWidth, screenHeight)
 
     pygame.init()

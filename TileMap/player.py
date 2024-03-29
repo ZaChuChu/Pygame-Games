@@ -1,4 +1,4 @@
-from pygame import Rect, draw
+from pygame import Rect, draw, Color
 
 class Player:
     def __init__(self, x, y, width, height, screenWidth, xOffset, maxX, screenHeight, yOffset, maxY, color):
@@ -21,6 +21,7 @@ class Player:
         self.setRectXPos()
         self.setRectYPos()
         self.color = color
+        self.borderColor = Color(50, 50, 50)
 
     def setConstraints(self):
         self.centerScreenX = (self.screenWidth - self.width) // 2
@@ -80,4 +81,4 @@ class Player:
     
     def draw(self, screen):
          draw.rect(screen, self.color , self.rect)
-         draw.rect(screen, "black", self.rect, 5)
+         draw.rect(screen, self.borderColor, self.rect, 5)
