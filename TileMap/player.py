@@ -58,8 +58,6 @@ class Player:
             self.screenLeft = self.relativeX - self.centerScreenX + self.xOffset
             self.screenRight = self.screenLeft + self.screenWidth
         
-
-
     def setRectYPos(self):
         if self.relativeY < self.lowerYBound:
             self.rect.y = self.relativeY + self.yOffset            

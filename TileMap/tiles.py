@@ -36,10 +36,6 @@ class Tiles:
                 tileObj.rect.y = row * self.cellHeight + self.yOffset - screenTop
                 tileObj.color = self.tileColors[row][col]
                 tileObj.display = True
-        
-        print(tilesRowStart, tilesRowEnd)
-        print(screenTop, screenBottom)
-        print(self.tiles[0][tilesColEnd - tilesColStart].color)
 
         for row in range(tilesRowEnd - tilesRowStart + 1, self.prevRowEnd + 1):
             for col in range(self.maxTileCols):

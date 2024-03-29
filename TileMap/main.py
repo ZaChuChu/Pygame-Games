@@ -26,13 +26,11 @@ def main():
     playerHeight = 50
     playerWidth = playerHeight
     playerColor = "White"
-    playerSpeed = 5
+    playerSpeed = playerHeight // 8
     playerMaxX = cols * cellWidth
     playerMaxY = rows * cellHeight
     playerStartX = (playerMaxX - playerWidth) // 2
     playerStartY = (playerMaxY - playerHeight) // 2
-    # playerStartX = 0
-    # playerStartY = 0
 
     player = Player(playerStartX, playerStartY, playerWidth, playerHeight, screenWidth, xMargin, playerMaxX, screenHeight, yMargin, playerMaxY, playerColor)
                 
