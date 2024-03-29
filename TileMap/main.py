@@ -9,12 +9,12 @@ def main():
 
     cellWidth = 100
     cellHeight = cellWidth
-    rows = 10
-    cols = 10
+    rows = 25
+    cols = 25
     xMargin = cellWidth
     yMargin = cellHeight
 
-    screenWidth = 500
+    screenWidth = 700
     screenHeight = screenWidth
     tilesObj = Tiles(rows, cols, cellWidth, cellHeight, xMargin, yMargin, screenWidth, screenHeight)
 
@@ -26,7 +26,7 @@ def main():
     playerHeight = 50
     playerWidth = playerHeight
     playerColor = "White"
-    playerSpeed = cellHeight // 3
+    playerSpeed = cellHeight // 10
     playerMaxX = cols * cellWidth
     playerMaxY = rows * cellHeight
     playerStartX = (playerMaxX - playerWidth) // 2
