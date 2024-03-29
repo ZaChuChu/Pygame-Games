@@ -15,40 +15,42 @@ class Tiles:
         self.totalHeight = rows * cellHeight
         self.screenWidth = screenWidth
         self.screenHeight = screenHeight
-        self.tiles = [[Tile(Rect(0, 0, cellWidth, cellHeight), Color(random.randint(0,255), random.randint(0,255), random.randint(0,255))) for col in range(cols)] for row in range(rows)]
-        # self.tiles = [[Tile(Rect(0, 0, cellWidth, cellHeight), "black" if (col + row) % 2 else "white") for col in range(cols)] for row in range(rows)]
-        self.prevRowStart = 0
-        self.prevRowEnd = rows - 1
-        self.prevColStart = 0 
-        self.prevColEnd = cols - 1
+        self.tileColors = [[Color(random.randint(0,255), random.randint(0,255), random.randint(0,255)) for col in range(cols)] for row in range(rows)]
+        self.maxTileCols = screenWidth // cellWidth + 2
+        self.maxTileRows = screenHeight // cellHeight + 2 
+        self.tiles = [[Tile(Rect(0, 0, cellWidth, cellHeight), None) for col in range(self.maxTileCols)] for row in range(self.maxTileRows)]
+        self.prevRowEnd = 0
+        self.prevColEnd = 0
 
     def setTiles(self, screenLeft, screenTop, screenRight, screenBottom):
         tilesColStart = max((screenLeft - self.xOffset) // self.cellWidth, 0)
         tilesColEnd = min((screenRight - self.xOffset) // self.cellWidth, self.cols - 1)
-
         tilesRowStart = max((screenTop - self.yOffset) // self.cellHeight, 0)
         tilesRowEnd = min((screenBottom - self.yOffset) // self.cellHeight, self.rows - 1)
-
         for row in range(tilesRowStart, tilesRowEnd + 1):
             for col in range(tilesColStart, tilesColEnd + 1):
-                self.tiles[row][col].rect.x = col * self.cellWidth + self.xOffset - screenLeft
-                self.tiles[row][col].rect.y = row * self.cellHeight + self.yOffset - screenTop
-                self.tiles[row][col].display = True
+                colIndex = col - tilesColStart
+                rowIndex = row - tilesRowStart
+                tileObj = self.tiles[rowIndex][colIndex]
+                tileObj.rect.x = col * self.cellWidth + self.xOffset - screenLeft
+                tileObj.rect.y = row * self.cellHeight + self.yOffset - screenTop
+                tileObj.color = self.tileColors[row][col]
+                tileObj.display = True
         
-        for rowRange in [range(self.prevRowStart, tilesRowStart), range(tilesRowEnd + 1, self.prevRowEnd + 1)]:
-            for row in rowRange:
-                for col in range(self.prevColStart, self.prevColEnd + 1):
-                    self.tiles[row][col].display = False
+        print(tilesRowStart, tilesRowEnd)
+        print(screenTop, screenBottom)
+        print(self.tiles[0][tilesColEnd - tilesColStart].color)
 
-        for colRange in [range(self.prevColStart, tilesColStart), range(tilesColEnd + 1, self.prevColEnd + 1)]:
-            for col in colRange:
-                for row in range(self.prevRowStart, self.prevRowEnd + 1):
-                    self.tiles[row][col].display = False
-        
-        self.prevRowStart = tilesRowStart
-        self.prevRowEnd = tilesRowEnd
-        self.prevColStart = tilesColStart
-        self.prevColEnd = tilesColEnd
+        for row in range(tilesRowEnd - tilesRowStart + 1, self.prevRowEnd + 1):
+            for col in range(self.maxTileCols):
+                self.tiles[row][col].display = False
+
+        for col in range(tilesColEnd - tilesColStart + 1, self.prevColEnd + 1):
+            for row in range(self.maxTileRows):
+                self.tiles[row][col].display = False
+
+        self.prevRowEnd = tilesRowEnd - tilesRowStart
+        self.prevColEnd = tilesColEnd - tilesColStart
 
 
     def draw(self, screen):

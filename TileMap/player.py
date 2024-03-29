@@ -50,7 +50,7 @@ class Player:
 
         elif self.relativeX > self.upperXBound:
             self.rect.x = self.centerScreenX + (self.relativeX - self.upperXBound)
-            self.screenRight = self.xOffset * 2 + self.maxX
+            self.screenRight = self.maxX + 2 * self.xOffset
             self.screenLeft = self.screenRight - self.screenWidth
 
         else:
