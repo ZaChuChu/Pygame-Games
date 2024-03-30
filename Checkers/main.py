@@ -23,6 +23,8 @@ def main():
     running = True
     gameBoard = Board(rowCount, colCount, offset, offset, boardWidth, boardHeight)
     mousePressed = False
+    pygame.mouse.set_visible(False)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -9,13 +9,13 @@ def main():
 
     cellWidth = 100
     cellHeight = cellWidth
-    cols = 10
-    rows = 10
+    cols = 25
+    rows = 25
     xMargin = cellWidth
     yMargin = cellHeight
 
-    screenWidth = 500
-    screenHeight = 500
+    screenWidth = 1500
+    screenHeight = 900
     tilesObj = Tiles(rows, cols, cellWidth, cellHeight, xMargin, yMargin, screenWidth, screenHeight)
 
     pygame.init()
@@ -39,6 +39,7 @@ def main():
     running = True
     gameOver = False
     startTime = time()
+    pygame.mouse.set_visible(False)
 
     while running:
         for event in pygame.event.get():
