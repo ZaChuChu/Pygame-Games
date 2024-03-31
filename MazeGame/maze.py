@@ -40,14 +40,14 @@ class Maze:
 
     def generateWalls(self):
         mst = self.graph.getMST()
-        horizontalAdjacencies = [[] for i in range(self.cols - 1)]
+        horizontalAdjacencies = [[] for i in range(self.rows)]
         verticalAdjacencies = [[] for i in range(self.rows - 1)]
         for edge in mst:
             if edge.node1[0] == edge.node2[0]:
-                horizontalAdjacencies[edge.node1[1]].append(edge)
-            else:
+                horizontalAdjacencies[edge.node1[0]].append(edge)
+            else:                
                 verticalAdjacencies[edge.node1[0]].append(edge)
-
+                
         # Make list of horizontal walls by row
         self.horizontalWalls = [[None for j in range(self.cols)] for i in range(self.rows + 1)]
         
@@ -68,23 +68,21 @@ class Maze:
                     self.horizontalWalls[i][wallX] = Rect(wallX * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentLength, self.segmentWidth)
                 
         # Make list of vertical walls by column
-        self.verticalWalls = [[None for j in range(self.rows)] for i in range(self.cols + 1)]
-
-        for index in [0, self.cols]:
-            for i in range(self.rows):
-                self.verticalWalls[index][i] = Rect(index * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
+        self.verticalWalls = [[None for j in range(self.cols + 1)] for i in range(self.rows)]
 
         for (i, row) in enumerate(horizontalAdjacencies):
-            i += 1
-            y = 0
+            x = 0
             for edge in row:
-                edgeY = edge.node1[0]
-                for wallY in range(y, edgeY):
-                    self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + self.xOffset, wallY * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
-                y = edgeY + 1
-            for wallY in range(y, self.rows):
-                    self.verticalWalls[i][wallY] = Rect(i * self.segmentOffset + self.xOffset, wallY * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
-    
+                edgeX = edge.node2[1]
+                if i == 0:
+                    print(edge)
+                    print(edgeX)
+                for wallX in range(x, edgeX):
+                    self.verticalWalls[i][wallX] = Rect(wallX * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
+                x = edgeX + 1
+            for wallX in range(x, self.cols + 1):
+                    self.verticalWalls[i][wallX] = Rect(wallX * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
+
     def randomize(self, playerRect):
         x = (playerRect.x - self.xOffset) % self.segmentOffset
         y = (playerRect.y - self.yOffset) % self.segmentOffset
@@ -138,26 +136,26 @@ class Maze:
     def getVerticalMovementWalls(self, left, top, right, bottom, direction):
         walls = []
        
-        if direction < 0 and top % self.segmentOffset < self.segmentWidth and top > self.segmentWidth:
-            verticalColStart = (top // self.segmentOffset) - 1
+        if direction < 0 and top % self.segmentOffset < self.segmentWidth and top > self.segmentOffset:
+            verticalRowStart = (top // self.segmentOffset) - 1
         else:
-            verticalColStart = top // self.segmentOffset
-        verticalColEnd = bottom // self.segmentOffset
+            verticalRowStart = top // self.segmentOffset
 
-        verticalColStart = max(verticalColStart, 0)
-        verticalColEnd = min(verticalColEnd, self.rows - 1)
+        verticalRowStart = max(verticalRowStart, 0)
+        verticalRowEnd = min(bottom // self.segmentOffset, self.rows - 1)
 
-        verticalRowStart = max(left // self.segmentOffset, 0)
-        verticalRowEnd = min(right // self.segmentOffset, self.cols)
+        verticalColStart = max(left // self.segmentOffset, 0)
+        verticalColEnd = min(right // self.segmentOffset, self.cols)
+
+        print(verticalRowStart, verticalRowEnd, verticalColStart, verticalColEnd)
 
         if left % self.segmentOffset < self.segmentWidth and left > self.segmentWidth:
             horizontalColStart = left // self.segmentOffset - 1
         else:
             horizontalColStart = left // self.segmentOffset
-        horizontalColEnd = right // self.segmentOffset
 
         horizontalColStart = max(horizontalColStart, 0)
-        horizontalColEnd = min(horizontalColEnd, self.cols - 1)
+        horizontalColEnd = min(right // self.segmentOffset, self.cols - 1)
 
         horizontalRowStart = max(top // self.segmentOffset, 0)
         horizontalRowEnd = min(bottom // self.segmentOffset, self.rows)
@@ -183,25 +181,23 @@ class Maze:
             horizontalColStart = (left // self.segmentOffset) - 1
         else:
             horizontalColStart = left // self.segmentOffset
-        horizontalColEnd = right // self.segmentOffset
 
         horizontalColStart = max(horizontalColStart, 0)
-        horizontalColEnd = min(horizontalColEnd, self.cols - 1)
+        horizontalColEnd = min(right // self.segmentOffset, self.cols - 1)
 
         horizontalRowStart = max(top // self.segmentOffset, 0)
         horizontalRowEnd = min(bottom // self.segmentOffset, self.rows)
 
-        if top % self.segmentOffset < self.segmentWidth and top > self.segmentWidth:
-            verticalColStart = top // self.segmentOffset - 1
+        if top % self.segmentOffset < self.segmentWidth and top > self.segmentOffset:
+            verticalRowStart = top // self.segmentOffset - 1
         else:
-            verticalColStart = top // self.segmentOffset
-        verticalColEnd = bottom // self.segmentOffset
+            verticalRowStart = top // self.segmentOffset
 
-        verticalColStart = max(verticalColStart, 0)
-        verticalColEnd = min(verticalColEnd, self.rows - 1)
+        verticalRowStart = max(verticalRowStart, 0)
+        verticalRowEnd = min(bottom // self.segmentOffset, self.rows - 1)
 
-        verticalRowStart = max(left // self.segmentOffset, 0)
-        verticalRowEnd = min(right // self.segmentOffset, self.cols)
+        verticalColStart = max(left // self.segmentOffset, 0)
+        verticalColEnd = min(right // self.segmentOffset, self.cols)
 
         for row in range(horizontalRowStart, horizontalRowEnd + 1):
             for col in range(horizontalColStart, horizontalColEnd + 1):
