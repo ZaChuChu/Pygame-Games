@@ -15,12 +15,12 @@ def main():
     cols = rows
     wallOffset = wallLength - wallWidth
     margin = wallOffset
-    xOffset = wallOffset
+    xOffset = margin
     yOffset = xOffset
     mazeHeight = wallOffset * rows + wallWidth
     mazeWidth = wallOffset * cols + wallWidth
   
-    maze = Maze(rows, cols, wallLength, wallWidth, margin, margin)
+    maze = Maze(rows, cols, wallLength, wallWidth, margin, margin, screenWidth, screenHeight)
 
     pygame.init()
     pygame.display.set_caption("One Who Runs Through Mazes")
@@ -31,14 +31,17 @@ def main():
     playerWidth = playerHeight
     playerColor = "blue"
     playerSpeed = wallOffset // 15
-    playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
-    playerStartY = margin + mazeHeight + (margin - playerHeight) // 2 - wallWidth
+    maxX = mazeWidth
+    maxY = mazeHeight
+    playerStartX = (mazeWidth - playerWidth) // 2
+    playerStartY = mazeHeight - wallOffset
 
     player = Player(playerStartX, playerStartY, playerWidth, playerHeight, screenWidth, screenHeight, xOffset, yOffset, maxX, maxY, playerSpeed, playerColor)
-
+    
     running = True
     gameOver = False
     startTime = time()
+    maze.setWallTiles(*player.absoluteScreenEdges())
 
     while running:
         for event in pygame.event.get():
@@ -75,41 +78,32 @@ def main():
             boxRight = min(max(boxRight, margin), margin + mazeWidth)
             boxBottom = min(max(boxBottom, margin), margin + mazeHeight)
                 
-            if yChange != 0:
-                if yChange < 0:
-                    verticalBox = [boxLeft, boxTop, boxRight, player.getY() - 1] 
-                else:
-                    verticalBox = [boxLeft, player.getY() + playerHeight + 1, boxRight, boxBottom]
-                verticalWalls = maze.getVerticalMovementWalls(*[val - margin for val in verticalBox], posChange[1])
-            else:
-                verticalWalls = []
+            # if yChange != 0:
+            #     if yChange < 0:
+            #         verticalBox = [boxLeft, boxTop, boxRight, player.getY() - 1] 
+            #     else:
+            #         verticalBox = [boxLeft, player.getY() + playerHeight + 1, boxRight, boxBottom]
+            #     verticalWalls = maze.getVerticalMovementWalls(*[val - margin for val in verticalBox], yChange)
+            # else:
+            verticalWalls = []
 
-            if xChange != 0:
-                if xChange < 0:
-                    horizontalBox = [boxLeft, boxTop, player.getX() - 1, boxBottom] 
-                else:
-                    horizontalBox = [player.getX() + playerWidth + 1, boxTop, boxRight, boxBottom]
-                horizontalWalls = maze.getHorizontalMovementWalls(*[val - margin for val in horizontalBox], posChange[0])
-            else:
-                horizontalWalls = []
-
-            if player.getY() >= margin + mazeHeight - playerSpeed:
-                for rect in maze.getEntranceVerticals():
-                    horizontalWalls.append(rect)
-                verticalWalls.append(maze.getEntranceHorizontal())
-            elif player.getY() <= margin + playerSpeed:
-                for rect in maze.getExitVerticals():
-                    horizontalWalls.append(rect)
-                verticalWalls.append(maze.getExitHorizontal())
+            # if xChange != 0:
+            #     if xChange < 0:
+            #         horizontalBox = [boxLeft, boxTop, player.getX() - 1, boxBottom] 
+            #     else:
+            #         horizontalBox = [player.getX() + playerWidth + 1, boxTop, boxRight, boxBottom]
+            #     horizontalWalls = maze.getHorizontalMovementWalls(*[val - margin for val in horizontalBox], yChange)
+            # else:
+            horizontalWalls = []
+            
 
             if xChange or yChange:
                 player.movePlayer(xChange, yChange, horizontalWalls, verticalWalls)
-                maze.randomize(*player.playerRandomizeInfo)
-                if maze.winRect.contains(player.rect):
-                    endTime = time()
-                    gameOver = True
+                maze.randomize(*player.playerRandomizeInfo())
+                maze.setWallTiles(*player.absoluteScreenEdges())
 
             screen.fill("orange")
+            maze.draw(screen)
             player.draw(screen)
             pygame.display.flip()
             clock.tick(60)

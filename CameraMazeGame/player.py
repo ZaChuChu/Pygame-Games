@@ -46,11 +46,11 @@ class Player:
                     self.rect = potRect
 
         if xChange:
-            self.relativeX = max(0, min(self.relativeX, self.maxX))
+            self.relativeX = max(0, min(self.relativeX, self.maxX - self.width))
             self.setRectXPos()
 
         if yChange:
-            self.relativeY = max(0, min(self.relativeY, self.maxY))
+            self.relativeY = max(0, min(self.relativeY, self.maxY - self.height))
             self.setRectYPos()
                 
     def moveTo(self, newX, newY):
@@ -64,7 +64,7 @@ class Player:
             self.screenRight = self.screenWidth
 
         elif self.relativeX > self.upperXBound:
-            self.rect.x = self.centerScreenX + (self.relativeX - self.upperXBound)
+            self.rect.x = self.centerScreenX + self.relativeX - self.upperXBound
             self.screenRight = self.maxX + 2 * self.xOffset
             self.screenLeft = self.screenRight - self.screenWidth
 
