@@ -33,8 +33,8 @@ def main():
     playerSpeed = wallOffset // 15
     maxX = mazeWidth
     maxY = mazeHeight
-    playerStartX = (mazeWidth - playerWidth) // 2
-    playerStartY = mazeHeight - wallOffset
+    playerStartX = wallWidth + maze.getEntrance() * wallOffset + (wallOffset - wallWidth - playerWidth) // 2
+    playerStartY = mazeHeight - wallOffset + (wallOffset - wallWidth - playerHeight) // 2
 
     player = Player(playerStartX, playerStartY, playerWidth, playerHeight, screenWidth, screenHeight, xOffset, yOffset, maxX, maxY, playerSpeed, playerColor)
     

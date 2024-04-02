@@ -74,9 +74,6 @@ class Maze:
             x = 0
             for edge in row:
                 edgeX = edge.node2[1]
-                if i == 0:
-                    print(edge)
-                    print(edgeX)
                 for wallX in range(x, edgeX):
                     self.verticalWalls[i][wallX] = Rect(wallX * self.segmentOffset + self.xOffset, i * self.segmentOffset + self.yOffset, self.segmentWidth, self.segmentLength)
                 x = edgeX + 1
@@ -146,8 +143,6 @@ class Maze:
 
         verticalColStart = max(left // self.segmentOffset, 0)
         verticalColEnd = min(right // self.segmentOffset, self.cols)
-
-        print(verticalRowStart, verticalRowEnd, verticalColStart, verticalColEnd)
 
         if left % self.segmentOffset < self.segmentWidth and left > self.segmentWidth:
             horizontalColStart = left // self.segmentOffset - 1

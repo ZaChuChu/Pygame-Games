@@ -10,7 +10,7 @@ def main():
 
     wallLength = 50
     wallWidth = int(wallLength * .1)
-    rows = 5
+    rows = 25
     cols = rows
     
     wallLength = max(screenHeight // (rows + 2), 1)

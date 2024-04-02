@@ -98,18 +98,6 @@ class Maze:
     def getEntrance(self):
         return self.entranceColumn
     
-    def getEntranceVerticals(self):
-        return self.enterBorderVerticals
-    
-    def getEntranceHorizontal(self):
-        return self.enterBorderHorizontal
-    
-    def getExitVerticals(self):
-        return self.exitBorderVerticals
-    
-    def getExitHorizontal(self):
-        return self.exitBorderHorizontal
-    
     def draw(self, screen):
         draw.rect(screen, "White", self.background)
         for row in self.horizontalWallTiles:
