@@ -55,8 +55,10 @@ class Player:
             self.setRectYPos()
                 
     def moveTo(self, newX, newY):
-        self.rect.x = newX
-        self.rect.y = newY
+        self.relativeX = newX
+        self.relativeY = newY
+        self.setRectXPos()
+        self.setRectYPos()
 
     def setRectXPos(self):
         if self.relativeX < self.lowerXBound:

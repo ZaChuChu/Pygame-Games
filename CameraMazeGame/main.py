@@ -6,12 +6,12 @@ from pygame import Rect, draw
 
 def main():
 
-    screenHeight = 500
-    screenWidth = 500
+    screenHeight = 650
+    screenWidth = screenHeight
 
     wallLength = 50
     wallWidth = int(wallLength * .1)
-    rows = 30
+    rows = 40
     cols = rows
     wallOffset = wallLength - wallWidth
     margin = wallOffset
@@ -77,17 +77,12 @@ def main():
                 else:
                     verticalWalls = []
 
-                print(player.relativeX, player.relativeY, playerSpeed)
-                print(player.rect.x, player.rect.y, player.rect.width, player.rect.height)
-                print("Horizontal")
-                print(horizontalMovement)
-                print([f"{wall.x}, {wall.y}, {wall.width}, {wall.height}" for wall in horizontalWalls])
-                print("Vertical")
-                print(verticalMovement)
-                print([f"{wall.x}, {wall.y}, {wall.width}, {wall.height}" for wall in verticalWalls])
                 player.movePlayer(xChange, yChange, horizontalWalls, verticalWalls)
-                # maze.randomize(*player.playerRandomizeInfo())
+                maze.randomize(*player.playerRandomizeInfo())
                 maze.setWallTiles(*player.absoluteScreenEdges())
+                if maze.didWin(player.rect):
+                    gameOver = True
+                    endTime = time()
 
             screen.fill("orange")
             maze.draw(screen)
@@ -119,6 +114,7 @@ def main():
                 maze.startMaze()
                 playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
                 player.moveTo(playerStartX, playerStartY)
+                maze.setWallTiles(*player.absoluteScreenEdges())
 
 
 if __name__ == "__main__": main()

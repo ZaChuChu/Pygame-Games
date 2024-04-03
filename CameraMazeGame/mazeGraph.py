@@ -58,13 +58,13 @@ class MazeGraph:
         
         random.shuffle(self.mst)
 
-        lowerPercent = .01
-        upperPercent = .03
+        lowerPercent = .003
+        upperPercent = .007
 
         for edge in self.mst[:random.randint(int(self.edgeCount * lowerPercent), int(self.edgeCount * upperPercent))]:
             edge.weight = random.randint(1, self.maxWeight)
         
-        for edge in self.edges[self.edgeCount - (max(self.rows, self.cols) // 4):]:
+        for edge in self.edges[self.edgeCount - (max(self.rows, self.cols) // 25):]:
             edge.weight = random.randint(1, self.maxWeight)
 
         self.edges.sort()

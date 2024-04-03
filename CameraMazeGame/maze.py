@@ -22,15 +22,16 @@ class Maze:
         self.height = segmentWidth + self.segmentOffset * rows
         self.background = Rect(xOffset, yOffset, self.width, self.height)
         self.graph = MazeGraph(self.rows, self.cols)
-        self.maxTileRows = screenHeight // self.segmentOffset + 3
-        self.maxTileCols = screenWidth // self.segmentOffset + 3
+        self.maxTileRows = (screenHeight - 1) // self.segmentOffset + 2
+        self.maxTileCols = (screenWidth - 1) // self.segmentOffset + 2
         self.verticalWallTiles = [[Tile(Rect(0, 0, self.segmentWidth, self.segmentLength)) for col in range(self.maxTileCols)] for row in range(self.maxTileRows)]
         self.horizontalWallTiles = [[Tile(Rect(0, 0, self.segmentLength, self.segmentWidth)) for col in range(self.maxTileCols)] for row in range(self.maxTileRows)]
         self.prevVerticalRowEnd = self.maxTileRows - 1
         self.prevVerticalColEnd = self.maxTileCols - 1
         self.prevHorizontalRowEnd = self.maxTileRows - 1
         self.prevHorizontalColEnd = self.maxTileCols - 1
-        self.winTile = Tile(Rect(0, 0, self.segmentOffset - self.segmentWidth, self.segmentOffset - self.segmentWidth))
+        self.winTile = Tile(Rect(0, yOffset + segmentLength // 5 * 2, segmentLength // 5, segmentLength // 5))
+        self.outLine = Rect(0, yOffset + segmentLength // 5 * 2 - 4, segmentLength // 5 + 8, segmentLength // 5 + 8)
         self.startMaze()
 
     def startMaze(self):
@@ -109,6 +110,14 @@ class Maze:
             for wallObj in row:
                 if wallObj.display:
                     draw.rect(screen, "black", wallObj.rect)
+
+        if self.winTile.display:
+            draw.rect(screen, "green", self.winTile.rect)
+            draw.rect(screen, "dark green", self.outLine, 4)
+
+    def didWin(self, playerRect):
+        if self.winTile.display:
+            return playerRect.contains(self.winTile.rect)
  
     def getVerticalMovementWalls(self, left, top, right, bottom, direction):
         if direction < 0 and top % self.segmentOffset < self.segmentWidth and top > self.segmentOffset:
@@ -219,15 +228,25 @@ class Maze:
                     wallObj.display = False
                     
         for row in range(horizontalRowEnd - horizontalRowStart + 1, self.prevHorizontalRowEnd + 1):
-            for col in range(self.prevHorizontalColEnd + 1):
+            for col in range(self.maxTileCols):
                 self.horizontalWallTiles[row][col].display = False
 
         for col in range(horizontalColEnd - horizontalColStart + 1, self.prevHorizontalColEnd + 1):
-            for row in range(self.prevVerticalRowEnd + 1):
+            for row in range(self.maxTileRows):
                 self.horizontalWallTiles[row][col].display = False
 
         self.prevHorizontalRowEnd = horizontalRowEnd - horizontalRowStart
         self.prevHorizontalColEnd = horizontalColEnd - horizontalColStart
+
+        if horizontalRowStart == 0 and verticalColStart <= self.exitColumn <= verticalColEnd:
+            self.winTile.display = True
+            self.winTile.rect.x = self.exitColumn  * self.segmentOffset + self.segmentLength // 5 * 2 + self.xOffset - screenLeft
+            self.winTile.rect.y = self.yOffset + self.segmentLength // 5 * 2 - screenTop
+            self.outLine.x = self.exitColumn  * self.segmentOffset + self.segmentLength // 5 * 2 - 4 + self.xOffset - screenLeft
+            self.outLine.y = self.yOffset + self.segmentLength // 5 * 2 - screenTop - 4
+        else:
+            self.winTile.display = False
+
 
         self.background.x = max(0, self.xOffset - screenLeft)
         self.background.y = max(0, self.yOffset - screenTop)
