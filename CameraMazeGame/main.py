@@ -52,54 +52,41 @@ def main():
         if not gameOver:
             xChange = 0
             yChange = 0
-            boxLeft = player.getX()
-            boxTop = player.getY()
-            boxRight = boxLeft + playerWidth
-            boxBottom = boxTop + playerHeight
 
             if (keys[pygame.K_d] or keys[pygame.K_RIGHT]):
-                if not (keys[pygame.K_a] or keys[pygame.K_LEFT]):
-                    boxRight += playerSpeed
-                    xChange = 1
-            elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                boxLeft -= playerSpeed
-                xChange = -1
+                xChange += 1
+            if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                xChange += -1
 
             if (keys[pygame.K_w] or keys[pygame.K_UP]):
-                if not keys[pygame.K_s] or keys[pygame.K_DOWN]:
-                    boxTop -= playerSpeed
-                    yChange = -1
-            elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-                boxBottom += playerSpeed
-                yChange = 1
-
-            boxLeft = min(max(boxLeft, margin), margin + mazeWidth)
-            boxTop = min(max(boxTop, margin), margin + mazeHeight)
-            boxRight = min(max(boxRight, margin), margin + mazeWidth)
-            boxBottom = min(max(boxBottom, margin), margin + mazeHeight)
-                
-            # if yChange != 0:
-            #     if yChange < 0:
-            #         verticalBox = [boxLeft, boxTop, boxRight, player.getY() - 1] 
-            #     else:
-            #         verticalBox = [boxLeft, player.getY() + playerHeight + 1, boxRight, boxBottom]
-            #     verticalWalls = maze.getVerticalMovementWalls(*[val - margin for val in verticalBox], yChange)
-            # else:
-            verticalWalls = []
-
-            # if xChange != 0:
-            #     if xChange < 0:
-            #         horizontalBox = [boxLeft, boxTop, player.getX() - 1, boxBottom] 
-            #     else:
-            #         horizontalBox = [player.getX() + playerWidth + 1, boxTop, boxRight, boxBottom]
-            #     horizontalWalls = maze.getHorizontalMovementWalls(*[val - margin for val in horizontalBox], yChange)
-            # else:
-            horizontalWalls = []
-            
+                yChange += -1
+            if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                yChange += 1
 
             if xChange or yChange:
+                horizontalMovement, verticalMovement = player.getMovementRanges(xChange, yChange)
+                screenBox = player.absoluteScreenEdges()
+                
+                if xChange:
+                    horizontalWalls = maze.getWalls(horizontalMovement, screenBox)
+                else: 
+                    horizontalWalls = []
+
+                if yChange:
+                    verticalWalls = maze.getWalls(verticalMovement, screenBox)
+                else:
+                    verticalWalls = []
+
+                print(player.relativeX, player.relativeY, playerSpeed)
+                print(player.rect.x, player.rect.y, player.rect.width, player.rect.height)
+                print("Horizontal")
+                print(horizontalMovement)
+                print([f"{wall.x}, {wall.y}, {wall.width}, {wall.height}" for wall in horizontalWalls])
+                print("Vertical")
+                print(verticalMovement)
+                print([f"{wall.x}, {wall.y}, {wall.width}, {wall.height}" for wall in verticalWalls])
                 player.movePlayer(xChange, yChange, horizontalWalls, verticalWalls)
-                maze.randomize(*player.playerRandomizeInfo())
+                # maze.randomize(*player.playerRandomizeInfo())
                 maze.setWallTiles(*player.absoluteScreenEdges())
 
             screen.fill("orange")

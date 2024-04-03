@@ -104,7 +104,6 @@ class Maze:
             for wallObj in row:
                 if wallObj.display:
                     draw.rect(screen, "black", wallObj.rect)
-                    # print(wallObj.rect.x)
 
         for row in self.verticalWallTiles:
             for wallObj in row:
@@ -161,26 +160,30 @@ class Maze:
         
         return self.getWalls(verticalRowStart, verticalRowEnd, verticalColStart, verticalColEnd, horizontalRowStart, horizontalRowEnd, horizontalColStart, horizontalColEnd)
     
-    def getWalls(self, verticalRowStart, verticalRowEnd, verticalColStart, verticalColEnd, horizontalRowStart, horizontalRowEnd, horizontalColStart, horizontalColEnd):
+    def getWalls(self, movementRange, screenRanges):
         walls = []
+        tileVerticalRowStart, tileVerticalColStart = self.getVerticalStarts(screenRanges[0], screenRanges[1])
+        verticalRowStart, verticalColStart = self.getVerticalStarts(movementRange[0], movementRange[1])
+        verticalRowEnd, verticalColEnd = self.getVerticalEnds(movementRange[2], movementRange[3])
         for row in range(verticalRowStart, verticalRowEnd + 1):
             for col in range(verticalColStart, verticalColEnd + 1):
-                wall = self.verticalWalls[row][col]
-                if wall is not None:
-                    walls.append(wall)
-
+                wall = self.verticalWallTiles[row - tileVerticalRowStart][col - tileVerticalColStart]
+                if wall.display:
+                    walls.append(wall.rect)
+        
+        tileHorizontalRowStart, tileHorizontalColStart = self.getHorizontalStarts(screenRanges[0], screenRanges[1])
+        horizontalRowStart, horizontalColStart = self.getHorizontalStarts(movementRange[0], movementRange[1])
+        horizontalRowEnd, horizontalColEnd = self.getHorizontalEnds(movementRange[2], movementRange[3])
         for row in range(horizontalRowStart, horizontalRowEnd + 1):
             for col in range(horizontalColStart, horizontalColEnd + 1):
-                wall = self.horizontalWalls[row][col]
-                if wall is not None:
-                    walls.append(wall)
+                wall = self.horizontalWallTiles[row - tileHorizontalRowStart][col - tileHorizontalColStart]
+                if wall.display:
+                    walls.append(wall.rect)
         return walls
     
     def setWallTiles(self, screenLeft, screenTop, screenRight, screenBottom):
-        verticalRowStart = max(0, (screenTop - self.yOffset - self.segmentWidth) // self.segmentOffset)
-        verticalRowEnd = min(self.rows - 1, (screenBottom - self.yOffset) // self.segmentOffset)
-        verticalColStart = max(0, (screenLeft - self.xOffset) // self.segmentOffset)
-        verticalColEnd = min(self.cols, (screenRight - self.xOffset) // self.segmentOffset)
+        verticalRowStart, verticalColStart = self.getVerticalStarts(screenLeft, screenTop)
+        verticalRowEnd, verticalColEnd = self.getVerticalEnds(screenRight, screenBottom)
         for verticalRow in range(verticalRowStart, verticalRowEnd + 1):
             for verticalCol in range(verticalColStart, verticalColEnd + 1):
                 wallObj = self.verticalWallTiles[verticalRow - verticalRowStart][verticalCol - verticalColStart]
@@ -202,10 +205,8 @@ class Maze:
         self.prevVerticalRowEnd = verticalRowEnd - verticalRowStart
         self.prevVerticalColEnd = verticalColEnd - verticalColStart
 
-        horizontalRowStart = max(0, (screenTop - self.yOffset) // self.segmentOffset)
-        horizontalRowEnd = min(self.rows, (screenBottom - self.yOffset) // self.segmentOffset)
-        horizontalColStart = max(0, (screenLeft - self.segmentWidth - self.xOffset) // self.segmentOffset)
-        horizontalColEnd = min(self.cols - 1, (screenRight - self.xOffset) // self.segmentOffset)
+        horizontalRowStart, horizontalColStart = self.getHorizontalStarts(screenLeft, screenTop)
+        horizontalRowEnd, horizontalColEnd = self.getHorizontalEnds(screenRight, screenBottom)
 
         for horizontalRow in range(horizontalRowStart, horizontalRowEnd + 1):
             for horizontalCol in range(horizontalColStart, horizontalColEnd + 1):
@@ -231,4 +232,24 @@ class Maze:
         self.background.x = max(0, self.xOffset - screenLeft)
         self.background.y = max(0, self.yOffset - screenTop)
         self.background.width = min(self.screenWidth, self.mazeWidth + self.xOffset - screenLeft)
-        self.background.height = min(self.screenHeight, self.mazeHeight + self.yOffset - screenTop)        
+        self.background.height = min(self.screenHeight, self.mazeHeight + self.yOffset - screenTop)      
+  
+    def getVerticalStarts(self, left, top):
+        verticalRowStart = max(0, (top - self.yOffset - self.segmentWidth) // self.segmentOffset)
+        verticalColStart = max(0, (left - self.xOffset) // self.segmentOffset)
+        return verticalRowStart, verticalColStart
+
+    def getVerticalEnds(self, right, bottom):
+        verticalRowEnd = min(self.rows - 1, (bottom - self.yOffset) // self.segmentOffset)
+        verticalColEnd = min(self.cols, (right - self.xOffset) // self.segmentOffset)
+        return verticalRowEnd, verticalColEnd
+
+    def getHorizontalStarts(self, left, top):
+        horizontalRowStart = max(0, (top - self.yOffset) // self.segmentOffset)
+        horizontalColStart = max(0, (left - self.segmentWidth - self.xOffset) // self.segmentOffset)
+        return horizontalRowStart, horizontalColStart
+
+    def getHorizontalEnds(self, right, bottom):
+        horizontalRowEnd = min(self.rows, (bottom - self.yOffset) // self.segmentOffset)
+        horizontalColEnd = min(self.cols - 1, (right - self.xOffset) // self.segmentOffset)
+        return horizontalRowEnd, horizontalColEnd

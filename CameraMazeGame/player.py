@@ -33,17 +33,18 @@ class Player:
         self.upperYBound = self.maxY - (self.centerScreenY - self.yOffset + self.height)
 
     def movePlayer(self, xChange, yChange, horizontalWalls, verticalWalls):
+        testRect = self.rect.copy()
         for i in range(self.speed):
             if xChange:
-                potRect = self.rect.move(xChange, 0)
+                potRect = testRect.move(xChange, 0)
                 if potRect.collidelist(horizontalWalls) == -1:
                     self.relativeX += xChange
-                    self.rect = potRect
+                    testRect = potRect
             if yChange:
-                potRect = self.rect.move(0, yChange)
+                potRect = testRect.move(0, yChange)
                 if potRect.collidelist(verticalWalls) == -1:
                     self.relativeY += yChange
-                    self.rect = potRect
+                    testRect= potRect
 
         if xChange:
             self.relativeX = max(0, min(self.relativeX, self.maxX - self.width))
@@ -104,3 +105,41 @@ class Player:
 
     def playerRandomizeInfo(self):
         return [self.relativeX, self.relativeY, self.width, self.height]
+    
+    def getMovementRanges(self, xChange, yChange):
+        if xChange < 0:
+            verticalLeft = max(self.relativeX - self.speed, 0)
+            verticalRight = self.relativeX + self.width
+            horizontalLeft = max(self.relativeX - self.speed, 0)
+            horizontalRight = self.relativeX
+        elif xChange > 0:
+            verticalLeft = self.relativeX 
+            verticalRight = min(self.relativeX + self.width + self.speed, self.maxX)
+            horizontalLeft = self.relativeX + self.width
+            horizontalRight = min(self.relativeX + self.width + self.speed, self.maxX)
+        else:
+            verticalLeft = self.relativeX
+            verticalRight = self.relativeX + self.width
+            horizontalLeft = self.relativeX
+            horizontalRight = self.relativeX
+    
+        if yChange < 0:
+            verticalTop = max(self.relativeY - self.speed, 0)
+            verticalBottom = self.relativeY
+            horizontalTop = max(self.relativeY - self.speed, 0)
+            horizontalBottom = self.relativeY + self.height
+        elif yChange > 0:
+            verticalTop = self.relativeY + self.height
+            verticalBottom = min(self.relativeY + self.height + self.speed, self.maxY)
+            horizontalTop = self.relativeY
+            horizontalBottom = min(self.relativeY + self.height + self.speed, self.maxY)
+        else:
+            verticalTop = self.relativeY
+            verticalBottom = self.relativeY
+            horizontalTop = self.relativeY
+            horizontalBottom = self.relativeY + self.height
+
+        return [
+            [horizontalLeft + self.xOffset, horizontalTop + self.yOffset, horizontalRight + self.xOffset, horizontalBottom + self.yOffset],
+            [verticalLeft + self.xOffset, verticalTop + self.yOffset, verticalRight + self.xOffset, verticalBottom + self.yOffset]
+        ]
