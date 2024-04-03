@@ -2,16 +2,15 @@ from maze import Maze
 from player import Player
 import pygame
 from time import time
-from pygame import Rect, draw
 
 def main():
 
     screenHeight = 650
     screenWidth = screenHeight
 
-    wallLength = 50
+    wallLength = 70
     wallWidth = int(wallLength * .1)
-    rows = 40
+    rows = 55
     cols = rows
     wallOffset = wallLength - wallWidth
     margin = wallOffset
