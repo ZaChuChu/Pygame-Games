@@ -8,3 +8,13 @@ Future Projects:
     3d Game - something like doom to start
     Rpg
     Something like that one zombie survival game
+
+Various mechanics and such:
+    Rotatable player:
+        Static view
+        Rotating view
+        Mouse base rotation
+    Tower defense game:
+        Grid implementation
+        Quad tree implemetation
+    

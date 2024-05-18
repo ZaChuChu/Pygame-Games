@@ -111,7 +111,7 @@ def main():
                 startTime = time()
                 gameOver = False
                 maze.startMaze()
-                playerStartX = margin + wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
+                playerStartX = wallWidth + wallOffset * maze.getEntrance() + (wallOffset - wallWidth - playerWidth) // 2
                 player.moveTo(playerStartX, playerStartY)
                 maze.setWallTiles(*player.absoluteScreenEdges())
 
