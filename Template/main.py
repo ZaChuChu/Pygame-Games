@@ -1,5 +1,6 @@
 import random
 import pygame
+from player import Player
 from time import time
 from pygame import Rect, draw
 
@@ -36,8 +37,8 @@ def main():
 
     while running:
         for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+            if event.type == pygame.QUIT:
+                running = False
 
         keys = pygame.key.get_pressed()
         if not gameOver:
@@ -76,7 +77,4 @@ def main():
                 player.moveTo(playerStartX, playerStartY)
 
 
-if __name__ == "__main__": main()
-
-        
 if __name__ == "__main__": main()

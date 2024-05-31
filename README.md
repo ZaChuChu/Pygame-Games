@@ -17,4 +17,8 @@ Various mechanics and such:
     Tower defense game:
         Grid implementation
         Quad tree implemetation
+    Animations:
+        Queue?
+    Menus:
+        Persitable settings?
     
