@@ -36,22 +36,19 @@ class ColorGroup:
     def claimColor(self, newColor):
         for cell in self.cells:
             cell.setColor(newColor)
-        print(self.containsSelf())
+
         for adjacent_set in self.adjacent_sets.values():
             for colorGroup in adjacent_set:
                 colorGroup.adjacent_sets[self.color].remove(self)
                 colorGroup.adjacent_sets[newColor].add(self)
-        print(self.containsSelf())
                 
         for same_color_group in self.adjacent_sets[newColor]:
             same_color_group.adjacent_sets[newColor].remove(self)
 
         self.color = newColor
 
-        print(self.containsSelf())
         for colorGroup in self.adjacent_sets[newColor]:
             self.merge(colorGroup)
-        print(self.containsSelf())
 
         self.adjacent_sets[newColor].clear()
         

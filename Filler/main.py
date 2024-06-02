@@ -1,5 +1,6 @@
 import pygame
 from board import Board
+from random import choice
 from color_selector import ColorSelector
 
 def main():
@@ -20,6 +21,7 @@ def main():
 
     pygame.init()
     screen = pygame.display.set_mode((screen_width, screen_height))
+    pygame.display.set_caption("Filler")
     clock = pygame.time.Clock()
     running = True
 
@@ -48,9 +50,8 @@ def main():
         board.draw()
         for selector in color_selectors.values():
             selector.draw()
-            
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(30)
         
     pygame.quit()
 

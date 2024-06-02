@@ -32,3 +32,19 @@
     merge with all adjacent groups of the same color
     clear set of color
     ```
+
+when two cells are unioned if they are not the same color a reference is established between them
+    create links
+
+when two cells are merged all references to one set will be changed to reference the other set - One set is "Consumed, all references
+    remove all references to the other group
+    make sure all referenced group have links with main group
+
+when a set changes colors it updates all references so that it is referenced under the correct color
+    remove all references in old color
+    add references to main set in new color
+
+    it then merges with all groups of the same color
+
+
+no group can ever reference itself
